@@ -1,0 +1,26 @@
+syntax = "v1"
+
+
+type FileReq struct {
+   Uid      uint32 `path:"uid"`
+   TaskId   uint32 `path:"task_id"`
+   Date     string `path:"date"`
+   FileName string `path:"file_name"`
+}
+
+type FileResp struct {
+    File []byte `json:"file"`
+}
+
+@server(
+	group: file_downlaod
+	middleware: AuthorizationMiddleware
+	prefix: /v2/file
+)
+
+service financial_statement {
+	@doc "文件下载"
+	@handler file
+    // /1/77/20221019/d5c39841223e19d08433d07b4949414b.jpg
+	get /:uid/:task_id/:date/:file_name (FileReq) returns (FileResp)
+}

@@ -1,0 +1,22 @@
+syntax = "v1"
+
+
+type FileConvertReq struct {
+   File []byte `file:"file"`      //文件流
+}
+
+type FileConvertResp struct {
+    Files []string  `json:"files"`  //文件base64数组
+}
+
+@server(
+	group: file_convert
+	middleware: AuthorizationMiddleware
+	prefix: /v2/file_convert
+)
+
+service financial_statement {
+	@doc "pdf转图片"
+	@handler Pdf2Image
+	post /pdf2image (FileConvertReq) returns (FileConvertResp)
+}

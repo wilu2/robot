@@ -1,0 +1,293 @@
+openapi: 3.0.1
+info:
+  title: 财报识别 API 文档
+  version: "0.0"
+  description: 财报识别 API 文档
+tags:
+  - name: task
+    description: 任务模块
+
+components:
+  responses:
+    general_response:
+      description: 请求失败
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/general_response"
+  schemas:
+    general_response:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: |
+            错误码：
+            200 - OK
+        msg:
+          type: string
+          description: 错误信息
+    task_id:
+      type: integer
+      description: 任务ID
+    image_position:
+      type: object
+      properties:
+        image:
+          type: integer
+          description: 图片文件索引
+        x:
+          type: integer
+        y:
+          type: integer
+        x2:
+          type: integer
+        y2:
+          type: integer
+      required:
+      - image
+      - x
+      - y
+      - x2
+      - y2
+    xls_position:
+      type: object
+    position:
+      oneOf:
+      - $ref: "#/components/schemas/image_position"
+      - $ref: "#/components/schemas/xls_position"
+    statement:
+      type: array
+      items:
+        type: object
+        properties:
+          organization:
+            type: string
+            description: 组织
+            example: 本行
+          date:
+            type: string
+            description: 日期/周期名
+            example: "本期"
+          titles:
+            description: 科目列表
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: |
+                    科目ID。
+                    若科目经过人工修正，取修正后的科目ID。
+                external_id:
+                  type: string
+                  description: 外部科目ID
+                key:
+                  type: object
+                  properties:
+                    ocr:
+                      type: string
+                      description: 科目OCR结果
+                    inferred:
+                      type: integer
+                      description: 推理匹配的科目ID
+                    position:
+                      $ref: "#/components/schemas/position"
+                value:
+                  type: object
+                  properties:
+                    ocr:
+                      type: string
+                      description: 数值OCR结果
+                    supervised:
+                      type: string
+                      description: 数值编辑结果
+                    position:
+                      $ref: "#/components/schemas/position"
+paths:
+  /v2/task/create:
+    post:
+      tags:
+      - task
+      summary: 创建财报识别任务
+      operationId: TaskCreate
+      parameters:
+      - in: query
+        name: standard_id
+        schema:
+          type: integer
+          description: 财务准则ID。如果不传，使用默认准则。
+      - in: query
+        name: external_standard_id
+        schema:
+          type: integer
+          description: 外部财务准则ID
+      - in: query
+        name: async
+        schema:
+          type: integer
+          enum:
+          - 0
+          - 1
+          description: 是否异步任务。默认`0`
+      - in: query
+        name: callback_driver
+        schema:
+          type: string
+          description: 定制的回调方法名。异步任务使用。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: object
+                  properties:
+                    reference:
+                      type: string
+                      description: 文件外部引用
+                    base64:
+                      type: string
+                      format: byte
+                  description: |
+                    `reference`和`base64`二选一。都提供的话，`base64`优先级更高。
+              required:
+              - file
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+          image/*:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: "#/components/schemas/general_response"
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        task_id:
+                          $ref: "#/components/schemas/task_id"
+                      required: 
+                      - task_id
+                  required:
+                  - data
+        default:
+          $ref: "#/components/responses/general_response"
+
+  /v2/task/{id}/edit:
+    post:
+      tags:
+      - task
+      summary: 编辑财报
+      operationId: TaskEdit
+      description: 重定向到财报编辑页面
+      parameters:
+      - in: path
+        name: id
+        schema:
+          $ref: "#/components/schemas/task_id"
+        required: true
+      responses:
+        "302":
+          description: 成功
+          headers:
+            Location:
+              schema:
+                type: string
+              description: 重定向地址
+        default:
+          $ref: "#/components/responses/general_response"
+
+
+  /v2/task/{id}:
+    post:
+      tags:
+      - task
+      summary: 获取财报信息
+      operationId: TaskInfo
+      parameters:
+      - in: path
+        name: id
+        schema:
+          $ref: "#/components/schemas/task_id"
+        required: true
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: "#/components/schemas/general_response"
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        financial_statement:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              balance_sheet:
+                                $ref: "#/components/schemas/statement"
+                              income_statement:
+                                $ref: "#/components/schemas/statement"
+                              cash_flow_statement:
+                                $ref: "#/components/schemas/statement"
+                        task_id:
+                          $ref: "#/components/schemas/task_id"
+                        status:
+                          type: integer
+                          description: |
+                            任务状态：已创建、识别中、编辑中、已提交
+                        standard:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              description: 准则ID
+                            external_id:
+                              type: string
+                              description: 外部准则ID
+                        file_format:
+                          type: string
+                          enum:
+                          - pdf
+                          - image
+                          - xls
+                        images:
+                          type: array
+                          items:
+                            type: string
+                          description: 图像文件名列表。只在`file_format`为`pdf`和`image`时存在。
+                        created_at:
+                          type: integer
+                          description: 创建时间，unix timestamp
+                        updated_at:
+                          type: integer
+                          description: 修改时间，unix timestamp
+                        external:
+                          type: object
+                          description: 外部信息，创建任务时额外的参数原样保留
+                      required: 
+                      - task_id
+                      - status
+                      - created_at
+                      - updated_at
+                  required:
+                  - data
+        default:
+          $ref: "#/components/responses/general_response"
+

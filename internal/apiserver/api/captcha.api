@@ -1,0 +1,17 @@
+syntax = "v1"
+
+type CaptchaResp struct {
+    CaptchaId  string `json:"captcha_id"`
+    CaptchaImg string `json:"captcha_img"`
+}
+
+@server(
+	group: captcha
+	prefix: /v2/captcha
+)
+
+service financial_statement {
+	@doc "验证码获取"
+	@handler captcha
+	get / () returns (CaptchaResp)
+}

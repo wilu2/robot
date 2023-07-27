@@ -1,0 +1,36 @@
+version: "0.1"
+database:
+  # consult[https://gorm.io/docs/connecting_to_the_database.html]"
+  dsn : "root:intsig@tcp(192.168.60.73:3306)/financial_statement_dev?charset=utf8mb4&parseTime=True&loc=Local"
+  # input mysql or postgres or sqlite or sqlserver. consult[https://gorm.io/docs/connecting_to_the_database.html]
+  db  : "mysql"
+  # enter the required data table or leave it blank.You can input :
+  tables  :
+    - login_tokens
+    - pages
+    - standards
+    - standard_statements
+    - standard_statement_formulas
+    - standard_statement_titles
+    - formula_title_map
+    - tasks
+    - users
+    - logs
+    - settings
+    - captchas
+  # specify a directory for output
+  outPath :  "./internal/apiserver/dal/query"
+  # query code file name, default: gen.go
+  outFile :  ""
+  # generate unit test for query code
+  withUnitTest  : false
+  # generated model code's package name
+  modelPkgName  : ""
+  # generate with pointer when field is nullable
+  fieldNullable : true
+  # generate field with gorm index tag
+  fieldWithIndexTag : false
+  # generate field with gorm column type tag
+  fieldWithTypeTag  : true
+  # detect integer field's unsigned type, adjust generated data type
+  fieldSignable  : true

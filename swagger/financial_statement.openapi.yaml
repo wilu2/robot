@@ -1,0 +1,2136 @@
+openapi: 3.0.3
+components:
+  schemas:
+    CaptchaResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/CaptchaRespData'
+          type: object
+    CaptchaRespData:
+      properties:
+        captcha_id:
+          format: string
+          type: string
+        captcha_img:
+          format: string
+          type: string
+      type: object
+    CopyStandardReq:
+      properties:
+        name:
+          format: string
+          type: string
+      type: object
+    CreateFormulaReq:
+      properties:
+        left:
+          description: 公式左边
+          format: string
+          maxLength: 2048
+          type: string
+        right:
+          description: 公式右边
+          format: string
+          maxLength: 2048
+          type: string
+        title_id_list:
+          description: 该公式所包含的科目id集合
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    CreateStandardReq:
+      properties:
+        external_id:
+          format: string
+          type: string
+        name:
+          format: string
+          type: string
+      type: object
+    CreateStandardResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/CreateStandardRespData'
+          type: object
+    CreateStandardRespData:
+      properties:
+        standard_id:
+          format: int32
+          type: integer
+      type: object
+    CreateTaskFileItem:
+      properties:
+        base64:
+          description: 文件base64
+          format: string
+          type: string
+        file_number:
+          description: 外部的file number信息
+          format: string
+          type: string
+        reference:
+          description: 文件外部引用 reference和base64二选一。都提供的话，base64优先级更高。
+          format: string
+          type: string
+      type: object
+    CreateTaskPagesItmeResp:
+      properties:
+        id:
+          format: int32
+          type: integer
+        url:
+          format: string
+          type: string
+      type: object
+    CreateTaskReq:
+      properties:
+        async:
+          default: "0"
+          description: 是否开启同步
+          enum:
+          - "0"
+          - "1"
+          format: int32
+          type: integer
+        consumer_id:
+          description: 附属信息：客户渠道id
+          format: string
+          type: string
+        external_standard_id:
+          description: 外部准则id
+          format: string
+          type: string
+        extra_info:
+          description: 扩展信息（任务识别结果回发时会带上）
+          format: string
+          type: string
+        file_type:
+          description: web端选择pdf时，请先调用pdf转image接口，让用户选择识别哪些页后，再调用该接口，将用户选择的image传给后端，并且类型指定为image。
+          enum:
+          - image
+          - pdf
+          - excel
+          format: string
+          type: string
+        files:
+          description: 财报文件
+          items:
+            $ref: '#/components/schemas/CreateTaskFileItem'
+          type: array
+        name:
+          description: 财报任务名称
+          format: string
+          type: string
+        standard_id:
+          description: 准则id
+          format: int32
+          type: integer
+      required:
+      - standard_id
+      - files
+      - file_type
+      - name
+      type: object
+    CreateTaskResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/CreateTaskRespData'
+          type: object
+    CreateTaskRespData:
+      properties:
+        file_info:
+          description: 对应请求时的外部文件的file number
+          items:
+            format: string
+            type: string
+          type: array
+        file_type:
+          description: "\t根据上传的财报文件解析出来的文件类型\n\t枚举值：image pdf excel\n\t"
+          enum:
+          - image
+          - pdf
+          - excel
+          format: string
+          type: string
+        pages:
+          items:
+            $ref: '#/components/schemas/CreateTaskPagesItmeResp'
+          type: array
+        task_id:
+          description: 财报id
+          format: int32
+          type: integer
+      type: object
+    CreateTitleItem:
+      properties:
+        aliases:
+          description: 别名，json字符串，示例：["name1","name2"]
+          format: string
+          type: string
+        external_id:
+          format: string
+          type: string
+        name:
+          format: string
+          maxLength: 200
+          minLength: 1
+          type: string
+      required:
+      - name
+      type: object
+    CreateTitleReq:
+      properties:
+        titles:
+          items:
+            $ref: '#/components/schemas/CreateTitleItem'
+          type: array
+      type: object
+    CreateUserReq:
+      properties:
+        account:
+          format: string
+          type: string
+        email:
+          format: string
+          type: string
+        mobile:
+          format: string
+          type: string
+        name:
+          format: string
+          type: string
+        password:
+          format: string
+          type: string
+      type: object
+    DeleteUserReq:
+      properties:
+        id:
+          format: int32
+          type: integer
+      type: object
+    DisableFormulaReq:
+      properties:
+        status:
+          description: "状态：  \n        1：正常 \n        -1：停用或删除  \n"
+          format: int32
+          type: integer
+      type: object
+    DisableTitleReq:
+      properties:
+        status:
+          description: "状态：  \n        1：正常 \n        -1：停用或删除  \n"
+          format: int32
+          type: integer
+      type: object
+    EditTaskReq:
+      properties:
+        financial_statement:
+          items:
+            $ref: '#/components/schemas/TaskFinancialStatement'
+          type: array
+      type: object
+    FileConvertReq:
+      properties:
+        file:
+          description: 文件流
+          format: binary
+          type: string
+      type: object
+    FileConvertResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/FileConvertRespData'
+          type: object
+    FileConvertRespData:
+      properties:
+        files:
+          description: 文件base64数组
+          items:
+            format: string
+            type: string
+          type: array
+      type: object
+    FileReq:
+      properties: {}
+      type: object
+    FileResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/FileRespData'
+          type: object
+    FileRespData:
+      properties:
+        file:
+          format: binary
+          type: string
+      type: object
+    Formula:
+      properties:
+        id:
+          format: int32
+          type: integer
+        left:
+          description: 公式左边
+          format: string
+          maxLength: 2048
+          type: string
+        right:
+          description: 公式右边
+          format: string
+          maxLength: 2048
+          type: string
+        statement_id:
+          format: int32
+          type: integer
+        status:
+          description: |
+            状态：
+                    1：正常
+                    -1：删除
+          format: int32
+          type: integer
+      type: object
+    FormulaListReq:
+      properties: {}
+      type: object
+    FormulaListResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/FormulaListRespData'
+          type: object
+    FormulaListRespData:
+      properties:
+        formulas:
+          items:
+            $ref: '#/components/schemas/Formula'
+          type: array
+        total:
+          format: int64
+          type: integer
+      type: object
+    GetSettingResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/GetSettingRespData'
+          type: object
+    GetSettingRespData:
+      properties:
+        failed_logins:
+          format: int32
+          type: integer
+        locked_time:
+          format: int32
+          type: integer
+        not_login_time:
+          format: int32
+          type: integer
+        session_time:
+          format: int32
+          type: integer
+        valid_time:
+          format: int32
+          type: integer
+      type: object
+    GetStandardReq:
+      properties:
+        status:
+          description: "\t状态：\n\t\t1：正常\n\t\t-1：停用\n\t"
+          format: int32
+          type: integer
+      type: object
+    GetStatementsReq:
+      properties: {}
+      type: object
+    GetStatementsResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/GetStatementsRespData'
+          type: object
+    GetStatementsRespData:
+      properties:
+        statements:
+          items:
+            $ref: '#/components/schemas/StatementItems'
+          type: array
+      type: object
+    GetTaskReq:
+      properties: {}
+      type: object
+    GetTaskResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/GetTaskRespData'
+          type: object
+    GetTaskRespData:
+      properties:
+        create_at:
+          description: 创建时间
+          format: int32
+          type: integer
+        external:
+          description: 文件扩展信息
+          items:
+            format: string
+            type: string
+          type: array
+        extra_info:
+          description: 扩展信息，创建任务时的扩展信息
+          format: string
+          type: string
+        file_format:
+          description: 文件类型
+          format: string
+          type: string
+        financial_statement:
+          description: 财报识别结果
+          items:
+            $ref: '#/components/schemas/TaskFinancialStatement'
+          type: array
+        groups:
+          description: 分组信息 如果为空则没有分组或者没有调整过分组
+          items:
+            $ref: '#/components/schemas/TaskGroupsResp'
+          type: array
+        images:
+          description: 所有图片页
+          items:
+            $ref: '#/components/schemas/Image'
+          type: array
+        operType:
+          description: 第三方业务字段（兴业），始终返回B
+          format: string
+          type: string
+        standard:
+          $ref: '#/components/schemas/Standard'
+          description: 准则信息
+        status:
+          description: "\t\t//已删除\n\t\tTaskStatusDeleted = -1\n\t\t//创建任务中\n\t\tTaskStatusCreateTasking
+            = 1\n\t\t//任务创建完成\n\t\tTaskStatusCreated = 10\n\t\t//识别中\n\t\tTaskStatusOcring
+            = 20\n\t\t//识别失败\n\t\tTaskStatusOcrFailed = 90\n\t\t//识别成功\n\t\tTaskStatusOcrSuccess
+            = 100\n\t\t//作废\n\t\tTaskCancellationFlag = 120\n\t"
+          format: int32
+          type: integer
+        task_id:
+          format: int32
+          type: integer
+        task_name:
+          description: 任务名
+          format: string
+          type: string
+        update_at:
+          description: 更新时间
+          format: int32
+          type: integer
+      type: object
+    GetUserReq:
+      properties: {}
+      type: object
+    GetUserResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/GetUserRespData'
+          type: object
+    GetUserRespData:
+      $ref: '#/components/schemas/UserInfo'
+    Header:
+      properties:
+        date:
+          description: 期限
+          format: string
+          type: string
+        order:
+          description: 系统推理出来的时间维度排序，越大越靠后
+          format: int32
+          type: integer
+        organization:
+          description: 所处组织
+          format: string
+          type: string
+      type: object
+    Id:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/IdData'
+          type: object
+    IdData:
+      properties:
+        id:
+          format: int32
+          type: integer
+      type: object
+    Image:
+      properties:
+        file_id:
+          format: int32
+          type: integer
+        img_src:
+          format: string
+          type: string
+        rotate_angle:
+          format: int32
+          type: integer
+      type: object
+    ListStandardReq:
+      properties:
+        page:
+          format: int32
+          type: integer
+        per_page:
+          format: int32
+          type: integer
+      type: object
+    ListStandardResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/ListStandardRespData'
+          type: object
+    ListStandardRespData:
+      properties:
+        standards:
+          items:
+            $ref: '#/components/schemas/StandardListInfo'
+          type: array
+        total:
+          format: int64
+          type: integer
+      type: object
+    ListTaskReq:
+      properties:
+        keywords:
+          description: 根据任务ID或者任务名进行搜索
+          format: string
+          type: string
+        order_by:
+          format: string
+          type: string
+        order_by_type:
+          format: string
+          type: string
+        page:
+          format: int32
+          type: integer
+        per_page:
+          format: int32
+          type: integer
+      type: object
+    ListTaskResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/ListTaskRespData'
+          type: object
+    ListTaskRespData:
+      properties:
+        tasks:
+          items:
+            $ref: '#/components/schemas/TaskListInfo'
+          type: array
+        total:
+          format: int64
+          type: integer
+      type: object
+    ListUserResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/ListUserRespData'
+          type: object
+    ListUserRespData:
+      properties:
+        count:
+          format: int64
+          type: integer
+        users:
+          items:
+            $ref: '#/components/schemas/UserInfo'
+          type: array
+      type: object
+    OrderByTitlesReq:
+      properties:
+        title_id_list:
+          description: 排序后的id顺序
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    PreDisableTitleResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/PreDisableTitleRespData'
+          type: object
+    PreDisableTitleRespData:
+      properties:
+        formula_id_list:
+          description: 公式id集合，当为空时，说明该科目没有被任何公式所使用
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    PwdLoginReq:
+      properties:
+        account:
+          format: string
+          type: string
+        password:
+          format: string
+          type: string
+      type: object
+    PwdLoginResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/PwdLoginRespData'
+          type: object
+    PwdLoginRespData:
+      properties:
+        email:
+          format: string
+          type: string
+        expiry:
+          format: int64
+          type: integer
+        id:
+          format: int32
+          type: integer
+        is_admin:
+          format: boolean
+          type: boolean
+        mobile:
+          format: string
+          type: string
+        name:
+          format: string
+          type: string
+        token:
+          format: string
+          type: string
+      type: object
+    SetDefaultStandardReq:
+      properties: {}
+      type: object
+    SsoTicketVerificationReq:
+      properties:
+        ticket:
+          format: string
+          type: string
+      type: object
+    Standard:
+      properties:
+        external_id:
+          format: string
+          type: string
+        id:
+          description: 准则id
+          format: int32
+          type: integer
+      type: object
+    StandardListInfo:
+      properties:
+        external_id:
+          format: string
+          type: string
+        id:
+          format: int32
+          type: integer
+        is_default:
+          description: "\t是否是默认准则：\n\t\t1：默认\n\t\t-1：非默认\n\t"
+          format: int32
+          type: integer
+        name:
+          format: string
+          type: string
+        status:
+          description: "\t状态：\n\t\t1：正常\n\t\t-1：停用\n\t"
+          format: int32
+          type: integer
+      type: object
+    Statement:
+      properties:
+        count:
+          description: 总列数
+          format: int32
+          type: integer
+        headers:
+          description: 列头
+          items:
+            $ref: '#/components/schemas/Header'
+          type: array
+        images:
+          description: 图片信息(供前端展示用)
+          items:
+            $ref: '#/components/schemas/Image'
+          type: array
+        titles:
+          description: 科目
+          items:
+            $ref: '#/components/schemas/StatementTitle'
+          type: array
+      type: object
+    StatementItems:
+      properties:
+        formulas:
+          items:
+            $ref: '#/components/schemas/Formula'
+          type: array
+        id:
+          format: int32
+          type: integer
+        standard_id:
+          format: int32
+          type: integer
+        status:
+          description: |
+            状态：
+                    1：启用
+                    -1：停用
+          format: int32
+          type: integer
+        titles:
+          items:
+            $ref: '#/components/schemas/Title'
+          type: array
+        type:
+          description: |
+            财务准则报表类型：
+                    1：资产负债表
+                    2：利润表
+                    3：现金流量表
+          format: int32
+          type: integer
+      type: object
+    StatementTitle:
+      properties:
+        colIndex:
+          format: int32
+          type: integer
+        external_id:
+          description: 外部科目ID
+          format: string
+          type: string
+        id:
+          description: 匹配到的标准科目ID
+          format: int32
+          type: integer
+        key:
+          $ref: '#/components/schemas/StatementTitleKey'
+          description: 科目信息
+        modify_flag:
+          description: 修改标识
+          format: boolean
+          type: boolean
+        page_index:
+          description: 科目所在文档的index
+          format: int32
+          type: integer
+        rowIndex:
+          format: int32
+          type: integer
+        similarity:
+          description: 匹配置信度 0到1之间，大于等于0.85匹配正常，小于0.85大于0匹配度低，0不匹配
+          format: double
+          type: number
+        title_name:
+          description: 匹配到的标准科目名称
+          format: string
+          type: string
+        values:
+          items:
+            $ref: '#/components/schemas/StatementTitleValue'
+          type: array
+      type: object
+    StatementTitleKey:
+      properties:
+        inferred:
+          description: 推断出来的科目id
+          format: int32
+          type: integer
+        ocr:
+          description: ocr结果
+          format: string
+          type: string
+        position:
+          description: 坐标
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    StatementTitleValue:
+      properties:
+        ocr:
+          description: ocr识别结果
+          format: string
+          type: string
+        position:
+          description: 坐标
+          items:
+            format: int32
+            type: integer
+          type: array
+        supervised:
+          description: 人工编辑后的值
+          format: string
+          type: string
+      type: object
+    TaskFinancialStatement:
+      properties:
+        balance_sheet:
+          $ref: '#/components/schemas/Statement'
+          description: 资产负债表
+        cash_flow_statement:
+          $ref: '#/components/schemas/Statement'
+          description: 现金流量表
+        income_statement:
+          $ref: '#/components/schemas/Statement'
+          description: 利润表
+      type: object
+    TaskGroupInfo:
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/TaskGroupPageInfo'
+          type: array
+        group_id:
+          format: string
+          type: string
+        group_name:
+          format: string
+          type: string
+      type: object
+    TaskGroupPageInfo:
+      properties:
+        file_id:
+          format: int32
+          type: integer
+        img_src:
+          format: string
+          type: string
+        rotate_angle:
+          format: int32
+          type: integer
+        type:
+          description: 1资产负债表  2现金流量表  3利润表
+          format: int32
+          type: integer
+      type: object
+    TaskGroupPageReq:
+      properties:
+        file:
+          description: 文件流
+          format: binary
+          type: string
+      type: object
+    TaskGroupPageResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/TaskGroupPageRespData'
+          type: object
+    TaskGroupPageRespData:
+      properties:
+        file_id:
+          format: int32
+          type: integer
+        img_src:
+          format: string
+          type: string
+      type: object
+    TaskGroupReq:
+      properties:
+        group:
+          items:
+            $ref: '#/components/schemas/TaskGroupInfo'
+          type: array
+      type: object
+    TaskGroupsResp:
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/TaskGroupPageInfo'
+          type: array
+        group_id:
+          format: string
+          type: string
+        group_name:
+          format: string
+          type: string
+      type: object
+    TaskListInfo:
+      properties:
+        async:
+          format: int32
+          type: integer
+        created_at:
+          format: int32
+          type: integer
+        error:
+          format: string
+          type: string
+        file_format:
+          format: string
+          type: string
+        id:
+          format: int32
+          type: integer
+        standard_id:
+          format: int32
+          type: integer
+        statement_types:
+          items:
+            type: array
+            items:
+              type: integer
+          type: array
+        status:
+          format: int32
+          type: integer
+        task_name:
+          format: string
+          type: string
+        updated_at:
+          format: int32
+          type: integer
+      type: object
+    TaskReIdentifyReq:
+      properties:
+        standard_id:
+          description: 准则id
+          format: int32
+          type: integer
+        task_id:
+          description: 财报id
+          format: int32
+          type: integer
+      required:
+      - standard_id
+      type: object
+    TaskReNameReq:
+      properties:
+        task_name:
+          description: 财报名称
+          format: string
+          type: string
+      type: object
+    Title:
+      properties:
+        aliases:
+          description: 别名，json字符串，示例：["name1","name2"]
+          format: string
+          type: string
+        external_id:
+          format: string
+          type: string
+        id:
+          format: int32
+          type: integer
+        name:
+          format: string
+          type: string
+        status:
+          description: "状态：  \n        1：正常 \n        -1：停用或删除  \n"
+          format: int32
+          type: integer
+      type: object
+    TitleListReq:
+      properties: {}
+      type: object
+    TitleListResp:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/TitleListRespData'
+          type: object
+    TitleListRespData:
+      properties:
+        titles:
+          items:
+            $ref: '#/components/schemas/Title'
+          type: array
+        total:
+          format: int64
+          type: integer
+      type: object
+    UpdateFormulaReq:
+      properties:
+        left:
+          description: 公式左边
+          format: string
+          maxLength: 2048
+          type: string
+        right:
+          description: 公式右边
+          format: string
+          maxLength: 2048
+          type: string
+        title_id_list:
+          description: 该公式所包含的科目id集合
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    UpdateSettingReq:
+      properties:
+        failed_logins:
+          format: int32
+          type: integer
+        locked_time:
+          format: int32
+          type: integer
+        not_login_time:
+          format: int32
+          type: integer
+        session_time:
+          format: int32
+          type: integer
+        valid_time:
+          format: int32
+          type: integer
+      type: object
+    UpdateStandardReq:
+      allOf:
+      - $ref: '#/components/schemas/defaultResp'
+      properties:
+        data:
+          $ref: '#/components/schemas/UpdateStandardReqData'
+          type: object
+    UpdateStandardReqData:
+      properties:
+        external_id:
+          format: string
+          type: string
+        name:
+          format: string
+          type: string
+        status:
+          description: "\t状态：\n\t\t1：正常\n\t\t-1：停用\n\t"
+          format: int32
+          type: integer
+      type: object
+    UpdateTitleReq:
+      properties:
+        aliases:
+          description: 别名，json字符串，示例：["name1","name2"]
+          format: string
+          type: string
+        external_id:
+          format: string
+          type: string
+        name:
+          format: string
+          maxLength: 200
+          type: string
+      type: object
+    UpdateUserReq:
+      properties:
+        email:
+          format: string
+          type: string
+        id:
+          format: int32
+          type: integer
+        mobile:
+          format: string
+          type: string
+        name:
+          format: string
+          type: string
+        password:
+          format: string
+          type: string
+      type: object
+    UserInfo:
+      properties:
+        account:
+          format: string
+          type: string
+        created_at:
+          format: int64
+          type: integer
+        email:
+          format: string
+          type: string
+        id:
+          format: int32
+          type: integer
+        mobile:
+          format: string
+          type: string
+        name:
+          format: string
+          type: string
+        updated_at:
+          format: int64
+          type: integer
+      type: object
+    UserListReq:
+      properties:
+        order_by:
+          default: create_time
+          description: 支持create_time 与 update_time 排序，默认是create_time
+          format: string
+          type: string
+        order_by_type:
+          default: desc
+          description: 支持asc与desc，默认是desc
+          format: string
+          type: string
+        page:
+          default: "1"
+          format: int32
+          type: integer
+        per_page:
+          default: "20"
+          format: int32
+          type: integer
+      type: object
+    UserPangu:
+      properties:
+        account:
+          format: string
+          type: string
+        name:
+          format: string
+          type: string
+        password:
+          format: string
+          type: string
+      type: object
+    defaultResp:
+      properties:
+        code:
+          default: "200"
+          description: 状态码
+          type: integer
+        msg:
+          default: success
+          description: message
+          type: string
+      type: object
+info:
+  title: Financial Statement Recognizer
+  version: ""
+paths:
+  /api/v2/task/create:
+    post:
+      operationId: taskCreateApi
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTaskResp'
+          description: ""
+      summary: 创建财报识别任务
+      tags:
+      - api
+  /v2/captcha/:
+    get:
+      operationId: captcha
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaptchaResp'
+          description: ""
+      summary: 验证码获取
+      tags:
+      - captcha
+  /v2/file/{uid}/{task_id}/{date}/{file_name}:
+    get:
+      operationId: file
+      parameters:
+      - in: path
+        name: uid
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: task_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: date
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: file_name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResp'
+          description: ""
+      summary: 文件下载
+      tags:
+      - file_downlaod
+  /v2/file_convert/pdf2image:
+    post:
+      operationId: Pdf2Image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileConvertReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileConvertResp'
+          description: ""
+      summary: pdf转图片
+      tags:
+      - file_convert
+  /v2/setting/:
+    get:
+      operationId: settingInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSettingResp'
+          description: ""
+      summary: 查看配置
+      tags:
+      - setting
+  /v2/setting/update:
+    post:
+      operationId: settingUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSettingReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 修改配置信息
+      tags:
+      - setting
+  /v2/standard/{id}:
+    delete:
+      operationId: standardDelete
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetStandardReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 启用/停用准则
+      tags:
+      - standard
+    get:
+      operationId: standardInfo
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateStandardReq'
+          description: ""
+      summary: 获取准则信息
+      tags:
+      - standard
+    put:
+      operationId: standardUpdate
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStandardReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 更新准则
+      tags:
+      - standard
+  /v2/standard/{id}/copy:
+    post:
+      operationId: standardCopy
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyStandardReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 复制准则
+      tags:
+      - standard
+  /v2/standard/{id}/set_default:
+    post:
+      operationId: standardSetDefault
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 设为默认准则
+      tags:
+      - standard
+  /v2/standard/{id}/statements:
+    get:
+      operationId: Statements
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetStatementsResp'
+          description: ""
+      summary: 获取准则报表信息
+      tags:
+      - standard
+  /v2/standard/create:
+    post:
+      operationId: standardCreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStandardReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateStandardResp'
+          description: ""
+      summary: 创建准则
+      tags:
+      - standard
+  /v2/standard/list:
+    get:
+      operationId: standardList
+      parameters:
+      - in: query
+        name: Page
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: PerPage
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListStandardResp'
+          description: ""
+      summary: 列出准则
+      tags:
+      - standard
+  /v2/standard/statement/{statement_id}/formula:
+    post:
+      operationId: formulaCreate
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFormulaReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Id'
+          description: ""
+      summary: 新增公式
+      tags:
+      - 试算平衡公式 API List
+  /v2/standard/statement/{statement_id}/formula/{formula_id}:
+    delete:
+      operationId: disableFormula
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: formula_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisableFormulaReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 禁用/启用公式
+      tags:
+      - 试算平衡公式 API List
+    put:
+      operationId: updateFormula
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: formula_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFormulaReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 更新公式
+      tags:
+      - 试算平衡公式 API List
+  /v2/standard/statement/{statement_id}/formulas:
+    get:
+      operationId: formulaList
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormulaListResp'
+          description: ""
+      summary: 获取所有公式
+      tags:
+      - 试算平衡公式 API List
+  /v2/standard/statement/{statement_id}/title:
+    post:
+      operationId: titleCreate
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTitleReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 新增科目
+      tags:
+      - 科目 API List
+  /v2/standard/statement/{statement_id}/title/{title_id}:
+    delete:
+      operationId: disableTitle
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: title_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisableTitleReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 停用/启用科目
+      tags:
+      - 科目 API List
+    put:
+      operationId: updateTitle
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: title_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTitleReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 更新科目
+      tags:
+      - 科目 API List
+  /v2/standard/statement/{statement_id}/title/{title_id}/formulas:
+    delete:
+      operationId: preDisableTitle
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: title_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisableTitleReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreDisableTitleResp'
+          description: ""
+      summary: 预删除（停用之前的检查）
+      tags:
+      - 科目 API List
+  /v2/standard/statement/{statement_id}/title/order_by:
+    put:
+      operationId: orderByTitles
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderByTitlesReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 科目排序
+      tags:
+      - 科目 API List
+  /v2/standard/statement/{statement_id}/titles:
+    get:
+      operationId: titleList
+      parameters:
+      - in: path
+        name: statement_id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TitleListResp'
+          description: ""
+      summary: 获取所有科目
+      tags:
+      - 科目 API List
+  /v2/task/{id}:
+    get:
+      operationId: taskInfo
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTaskResp'
+          description: ""
+      summary: 获取财报信息
+      tags:
+      - task
+  /v2/task/{id}/delete:
+    post:
+      operationId: taskDelete
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 删除财报任务
+      tags:
+      - task
+  /v2/task/{id}/edit:
+    post:
+      operationId: taskEdit
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      - description: 作废标志，设置为true时为作废
+        in: query
+        name: cancellation_flag
+        required: false
+        schema:
+          type: string
+      - description: 提交时，当前编辑的财报索引，下标从0开始
+        in: query
+        name: current_index
+        required: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditTaskReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 保存编辑的财报
+      tags:
+      - task
+  /v2/task/{id}/group:
+    post:
+      operationId: taskGroup
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskGroupReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 调整财报分组
+      tags:
+      - task
+  /v2/task/{id}/group/page:
+    post:
+      operationId: taskGroupPage
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TaskGroupPageReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskGroupPageResp'
+          description: ""
+      summary: 调整分组时的上传文件接口
+      tags:
+      - task
+  /v2/task/{id}/rename:
+    post:
+      operationId: taskReName
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskReNameReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 重命名财报任务
+      tags:
+      - task
+  /v2/task/create:
+    post:
+      operationId: taskCreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTaskResp'
+          description: ""
+      summary: 创建财报识别任务
+      tags:
+      - task
+  /v2/task/list:
+    get:
+      operationId: taskList
+      parameters:
+      - in: query
+        name: Page
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: PerPage
+        required: false
+        schema:
+          type: string
+      - description: 根据任务ID或者任务名进行搜索
+        in: query
+        name: KeyWords
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: OrderBy
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: OrderByType
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTaskResp'
+          description: ""
+      summary: 列出财报任务
+      tags:
+      - task
+  /v2/task/re-indentify:
+    post:
+      operationId: taskReIdentify
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskReIdentifyReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 重新识别财报任务
+      tags:
+      - task
+  /v2/user/{id}:
+    get:
+      operationId: userInfo
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserResp'
+          description: ""
+      summary: 查看用户
+      tags:
+      - user
+  /v2/user/create:
+    post:
+      operationId: userCreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 新建用户
+      tags:
+      - user
+  /v2/user/delete:
+    post:
+      operationId: userDelete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteUserReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 删除用户
+      tags:
+      - user
+  /v2/user/list:
+    get:
+      operationId: userList
+      parameters:
+      - in: query
+        name: Page
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: PerPage
+        required: false
+        schema:
+          type: string
+      - description: 支持create_time 与 update_time 排序，默认是create_time
+        in: query
+        name: OrderBy
+        required: false
+        schema:
+          type: string
+      - description: 支持asc与desc，默认是desc
+        in: query
+        name: OrderByType
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUserResp'
+          description: ""
+      summary: 列出用户
+      tags:
+      - user
+  /v2/user/login:
+    post:
+      operationId: userLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PwdLoginReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PwdLoginResp'
+          description: ""
+      summary: 用户登录
+      tags:
+      - userUnauthorization
+  /v2/user/logout:
+    get:
+      operationId: userLogout
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 用户登出
+      tags:
+      - userUnauthorization
+  /v2/user/pangu:
+    post:
+      operationId: userPangu
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPangu'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 系统初始化创建系统管理员
+      tags:
+      - userUnauthorization
+  /v2/user/sso/ticket/verification:
+    get:
+      operationId: ssoTicketVerification
+      parameters:
+      - in: query
+        name: Ticket
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PwdLoginResp'
+          description: ""
+      summary: sso登录ticket验证，成功后返回一个用户token
+      tags:
+      - userUnauthorization
+  /v2/user/update:
+    post:
+      operationId: userUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserReq'
+        description: ""
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/defaultResp'
+          description: ""
+      summary: 修改用户信息
+      tags:
+      - user

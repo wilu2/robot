@@ -1,0 +1,138 @@
+syntax = "v1"
+
+type CreateStandardReq struct {
+	Name            string     `json:"name"`
+	ExternalID      string     `json:"external_id"`
+}
+
+type CopyStandardReq struct {
+	ID              uint32      `path:"id"`
+	Name            string     	`json:"name"`
+}
+
+type CreateStandardResp struct{
+	StandardID uint32 `json:"standard_id"`
+}
+
+type UpdateStandardReq struct{
+	ID 					uint32 		`path:"id"`
+	Name            	string     	`json:"name"`
+	ExternalID      	string     	`json:"external_id"`
+	/*
+	状态：
+		1：正常
+		-1：停用
+	*/
+	Status      		int     	`json:"status"`
+}
+
+type GetStandardReq struct{
+	ID uint32 `path:"id"`
+	/*
+	状态：
+		1：正常
+		-1：停用
+	*/
+	Status int	`json:"status"`
+}
+
+type ListStandardReq struct{
+	Page    uint32 `form:"page"`
+	PerPage uint32 `form:"per_page"`
+}
+
+type ListStandardResp struct{
+	Standards []StandardListInfo 		`json:"standards"`
+	Total		int64					`json:"total"`
+}
+
+type StandardListInfo struct{
+	ID         	uint32   	`json:"id"`
+	Name       	string 	`json:"name"`
+	ExternalID 	string 	`json:"external_id"`
+
+	/*
+	是否是默认准则：
+		1：默认
+		-1：非默认
+	*/
+	IsDefault	int		`json:"is_default"`	
+	/*
+	状态：
+		1：正常
+		-1：停用
+	*/
+	Status		int		`json:"status"`
+}
+
+type GetStatementsReq struct{
+    ID              uint32       `path:"id"`
+}
+
+type GetStatementsResp struct {
+    Statements	[]StatementItems	`json:"statements"`
+}
+
+type StatementItems struct {
+    /*
+    财务准则报表类型：
+        1：资产负债表
+        2：利润表
+        3：现金流量表
+    */
+    Type        int     	`json:"type"`
+    StandardID  int  		`json:"standard_id"`
+    /*
+    状态：
+        1：启用
+        -1：停用
+    */
+    Status      int     	`json:"status"`
+    ID          uint32    	`json:"id"`
+	Titles		[]Title		`json:"titles"`
+	Formulas	[]Formula	`json:"formulas"`
+}
+
+type SetDefaultStandardReq struct {
+	 ID              uint32       `path:"id"`
+}
+
+@server(
+	group: standard
+	middleware: AuthorizationMiddleware
+	prefix: /v2/standard
+)
+
+service financial_statement {
+	@doc "创建准则"
+	@handler standardCreate
+	post /create (CreateStandardReq) returns (CreateStandardResp)
+	
+	@doc "复制准则"
+	@handler standardCopy
+	post /:id/copy (CopyStandardReq) returns()
+
+	@doc "更新准则"
+	@handler standardUpdate
+	put /:id (UpdateStandardReq) returns()
+
+	@doc "设为默认准则"
+	@handler standardSetDefault
+	post /:id/set_default (SetDefaultStandardReq) returns()
+	
+	@doc "获取准则信息"
+	@handler standardInfo
+	get /:id (GetStandardReq) returns (UpdateStandardReq)
+	
+	@doc "启用/停用准则"
+	@handler standardDelete
+	delete /:id (GetStandardReq)
+	
+	@doc "列出准则"
+	@handler standardList
+	get /list (ListStandardReq) returns (ListStandardResp)
+
+	@doc "获取准则报表信息"
+	@handler Statements
+	get /:id/statements (GetStatementsReq) returns (GetStatementsResp)
+}

@@ -1,0 +1,17 @@
+syntax = "v1"
+
+info (
+	title: "Financial Statement Recognizer"
+	baseapi: ""
+)
+
+import (
+	"user.api"
+	"task.api"
+	"standard.api"
+	"standard_statement.api"
+	"file_convert.api"
+	"file.api"
+	"captcha.api"
+	"setting.api"
+)

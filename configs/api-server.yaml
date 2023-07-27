@@ -1,0 +1,100 @@
+server:
+  host: 0.0.0.0
+  port: 8080
+  mode: debug
+  domain: http://192.168.60.73:8080
+  health: true   # 健康检查
+  language: en  # 国际化 en zh
+  middlewares: ginZap,recovery,cors    # 加载中间件列表
+  maxPingCount:   # 服务器启动后，尝试检查次数
+  db: mysql
+  file-storage: local   #文件存储系统，enum： local、nfs
+
+
+auth:
+  auth-type: "default"       #用户鉴权方式：default 、 url-token
+  auth-url-token-key: "token" #当使用url-token授权认证方式时，该项需要根据第三方系统授权字段进行设置，例如：token
+  check-token-api: "http://10.4.20.163:7077/bank_flow/checkTgt"  #如果是url-token的鉴权方式，则Token校验的API
+  check-token-result-key: "token"  #url-token的鉴权方式，则Token校验的API返回数据的json路径
+
+task-result-async:
+  url: ""     #同步task结果的url
+
+file-cleaner:
+  enable: true                  #是否开启文件清理功能,开启后清理半年之前的文件数据
+  backup-task: false             #清理文件时是否开启任务备份功能
+  backup-task-dir: ""           #清理文件时如果开启任务备份功能，请指定备份文件的目录
+  # 如果要开启mysql文件备份功能，则必须提前创建好mysql 数据库，提前执行db初始化脚本创建好表
+  backup-task-db-username: ""   #清理文件时如果开启任务备份功能，请指定备份时的mysql 的username
+  backup-task-db-password: ""   #清理文件时如果开启任务备份功能，请指定备份时的mysql 的password
+  backup-task-db-host: ""       #清理文件时如果开启任务备份功能，请指定备份时的mysql 的host
+  backup-task-db-port: ""       #清理文件时如果开启任务备份功能，请指定备份时的mysql 的port
+  backup-task-db-database: ""   #清理文件时如果开启任务备份功能，请指定备份时的mysql 的database
+
+local-storage:
+  save-dir: "/usr/local/fr-files/"  #本地文件存储时，文件存储路径
+
+nfs:    #网络文件存储时，文件存储配置
+  download: "https://xxx/download/aws/cn-northwest-1/textin-cn-test/"
+  upload: "https://xxx/upload/aws/cn-northwest-1/textin-cn-test/"
+  bucket: "textin-cn-test"
+
+ocr:
+  recognize_table_api: "http://temp-financial-statement-table-ocr-with-ner.ai.intsig.net/ai/service/v2/recognize/table"
+
+mysql:
+  host: 192.168.60.73
+  port: 3306
+  username: textin
+  password: is@SHWJC
+  dataBase: financial_statement
+  max-idle-connections: 100 # MySQL 最大空闲连接数，默认 100
+  max-open-connections: 100 # MySQL 最大打开的连接数，默认 100
+  max-connection-life-time: 10s # 空闲连接最大存活时间，默认 10s
+  log-level: 4 # GORM log level, 1: silent, 2:error, 3:warn, 4:info
+
+dameng:
+  host: 192.168.169.133
+  port: 5236
+  username: SYSDBA
+  password: SYSDBA001
+  dataBase: SYSDBA
+
+redis:
+  host: 192.168.169.133
+  port: 6379
+  db: 0
+  username:
+  password:
+  sentinelUsername: ""
+  pool-size: 20     # 连接池最大socket连接数，默认为4倍CPU数
+  min-idle-conns: 10 # 最小空闲连接数
+  dial-time-out: 5s # 连接建立超时时间, 默认5s
+  read-time-out: 3s # 读超时默认3s
+  write-time-out: 3s # 写超时，默认等于读超时
+  pool-time-out: 4s # 等待连接最大时间
+  idle-check-frequency: 5s # 检查空闲连接频率
+  idle-time-out: 10s # 空闲连接的超时时间
+
+feature: # 额外功能
+  metrics: false # 开启 metrics, router:  /metrics
+  profiling: false # 开启性能分析, 可以通过 <host>:<port>/debug/pprof/地址查看程序栈、线程等系统信息，默认值为 true
+
+
+log:
+  name: financial-statement # Logger日志的名字
+  development: true # 如果是开发模式，会对DPanicLevel进行堆栈跟踪。
+  level: debug #debug, info, warn, error, dpanic, panic, fatal。
+  format: console # 支持的日志输出格式，目前支持console和json两种。console其实就是text格式。
+  enable-color: true # 是否开启颜色输出，true:是，false:否
+  disable-caller: false # 是否开启 caller，如果开启会在日志中显示调用日志所在的文件、函数和行号
+  disable-stacktrace: false # 是否再panic及以上级别禁止打印堆栈信息
+  output-paths: stdout # 支持输出到多个输出，逗号分开。支持输出到标准输出（stdout）和文件。
+  error-output-paths: # zap内部(非业务)错误日志输出路径，多个输出，逗号分开
+
+jwt:
+  iss: "textin-financial-statement"
+  realm: JWT # jwt 标识
+  key: 0b8d27bbe80a711d6b2a872be9cb6068
+  timeout: 24h # token 过期时间(小时)
+  max-refresh: 72h # token 更新时间(小时)

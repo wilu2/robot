@@ -1,0 +1,179 @@
+syntax = "v1"
+
+type Id struct {
+    ID      uint32    `json:"id"`
+}
+
+type CreateTitleItem struct {
+    
+    Name            string  `json:"name" binding:"required,min=1,max=200"`
+    ExternalId      string  `json:"external_id"`
+    Aliases         string  `json:"aliases"` //别名，json字符串，示例：["name1","name2"]
+}
+
+type CreateTitleReq struct {
+    Titles []CreateTitleItem `json:"titles"`
+    StatementId     uint32    `path:"statement_id"`
+}
+
+type UpdateTitleReq struct {
+    StatementId     uint32      `path:"statement_id"`
+    TitleId         uint32      `path:"title_id"`
+    Name            string      `json:"name" binding:"max=200"`
+    ExternalId      string      `json:"external_id"`
+    Aliases         string      `json:"aliases"` //别名，json字符串，示例：["name1","name2"]
+}
+
+type TitleListReq struct {
+    StatementId     uint32    `path:"statement_id"`
+    Page            uint32    `path:"page"`
+	PerPage         uint32    `path:"per_page"`
+}
+
+type TitleListResp struct {
+    Titles      []Title                 `json:"titles"`
+    Total		int64					`json:"total"`
+}
+
+type Title struct {
+    ID              uint32    `json:"id"`
+    Name            string  `json:"name"`
+    ExternalId      string  `json:"external_id"`
+    Aliases         string  `json:"aliases"` //别名，json字符串，示例：["name1","name2"]
+    /*
+    状态：  
+        1：正常 
+        -1：停用或删除  
+    */
+    Status          int     `json:"status"`
+}
+
+type DisableTitleReq struct {
+    StatementId     uint32    `path:"statement_id"`
+    TitleId         uint32    `path:"title_id"`
+    /*
+    状态：  
+        1：正常 
+        -1：停用或删除  
+    */
+    Status          int     `json:"status"`
+}
+
+type PreDisableTitleResp struct {
+    FormulaIdList    []uint32      `json:"formula_id_list"`   //公式id集合，当为空时，说明该科目没有被任何公式所使用
+}
+
+type OrderByTitlesReq struct {
+    StatementId         uint32    `path:"statement_id"`
+    TitleIdList         []uint32  `json:"title_id_list"`   //排序后的id顺序
+}
+
+type CreateFormulaReq struct {
+    StatementId         uint32    `path:"statement_id"`
+    Left                string  `json:"left" binding:"max=2048"`    //公式左边
+    Right               string  `json:"right" binding:"max=2048"`    //公式右边
+    TitleIdList         []uint32  `json:"title_id_list"`   //该公式所包含的科目id集合
+}
+
+type UpdateFormulaReq struct {
+    StatementId         uint32    `path:"statement_id"`
+    FormulaId           uint32    `path:"formula_id"`
+    Left                string  `json:"left" binding:"max=2048"`    //公式左边
+    Right               string  `json:"right" binding:"max=2048"`    //公式右边
+    TitleIdList         []uint32  `json:"title_id_list"`   //该公式所包含的科目id集合
+}
+
+type FormulaListReq struct {
+    StatementId    uint32    `path:"statement_id"`
+    Page           uint32    `path:"page"`
+	PerPage        uint32    `path:"per_page"`
+}
+
+type FormulaListResp struct {
+    Formulas    []Formula               `json:"formulas"`
+    Total		int64					`json:"total"`
+}
+
+type Formula struct {
+    ID              uint32    `json:"id"`
+    StatementId     uint32    `json:"statement_id"`
+    Left            string  `json:"left" binding:"max=2048"`    //公式左边
+    Right           string  `json:"right" binding:"max=2048"`    //公式右边
+    /*
+    状态：
+        1：正常
+        -1：删除
+    */
+    Status          int     `json:"status"`
+}
+
+type DisableFormulaReq struct {
+     StatementId     uint32    `path:"statement_id"`
+     FormulaId     uint32    `path:"formula_id"`
+    /*
+    状态：  
+        1：正常 
+        -1：停用或删除  
+    */
+    Status          int     `json:"status"`
+}
+
+@server(
+	group: standard_statement_title
+	middleware: AuthorizationMiddleware
+	prefix: /v2/standard/statement
+    swtags: "科目 API List"
+)
+
+service financial_statement {
+    @doc "新增科目"
+	@handler titleCreate
+	post /:statement_id/title (CreateTitleReq) returns ()
+
+    @doc "获取所有科目"
+	@handler titleList
+    get /:statement_id/titles (TitleListReq) returns (TitleListResp)
+
+    @doc "停用/启用科目"
+    @handler disableTitle
+    delete /:statement_id/title/:title_id (DisableTitleReq) returns()
+
+    @doc "预删除（停用之前的检查）"
+    @handler preDisableTitle
+    delete /:statement_id/title/:title_id/formulas (DisableTitleReq) returns(PreDisableTitleResp)
+
+    @doc "科目排序"
+    @handler orderByTitles
+    put /:statement_id/title/order_by (OrderByTitlesReq) returns()
+
+    @doc "更新科目"
+    @handler updateTitle
+    put /:statement_id/title/:title_id (UpdateTitleReq) returns()
+}
+
+@server(
+	group: standard_statement_formulas
+	middleware: AuthorizationMiddleware
+	prefix: /v2/standard/statement
+    swtags: "试算平衡公式 API List"
+)
+
+service financial_statement {
+    @doc "新增公式"
+    @handler formulaCreate
+    post /:statement_id/formula (CreateFormulaReq) returns(Id)
+
+    @doc "获取所有公式"
+    @handler formulaList
+    get /:statement_id/formulas (FormulaListReq) returns(FormulaListResp)
+    
+    @doc "禁用/启用公式"
+    @handler disableFormula
+    delete /:statement_id/formula/:formula_id (DisableFormulaReq) returns()
+
+    @doc "更新公式"
+    @handler updateFormula
+    put /:statement_id/formula/:formula_id (UpdateFormulaReq) returns()
+    
+    
+}

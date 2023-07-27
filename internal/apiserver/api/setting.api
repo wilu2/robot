@@ -1,0 +1,34 @@
+syntax = "v1"
+
+type GetSettingResp {
+    FailedLogin  int32 `json:"failed_logins" mapstructure:",omitempty"`
+    LockedTime   int32 `json:"locked_time" mapstructure:",omitempty"`
+    ValidTime    int32 `json:"valid_time" mapstructure:",omitempty"`
+    SessionTime  int32 `json:"session_time" mapstructure:",omitempty"`
+    NotLoginTime int32 `json:"not_login_time" mapstructure:",omitempty"`
+}
+
+type UpdateSettingReq {
+	FailedLogin  int32 `json:"failed_logins" mapstructure:",omitempty"`
+    LockedTime   int32 `json:"locked_time" mapstructure:",omitempty"`
+    ValidTime    int32 `json:"valid_time" mapstructure:",omitempty"`
+    SessionTime  int32 `json:"session_time" mapstructure:",omitempty"`
+    NotLoginTime int32 `json:"not_login_time" mapstructure:",omitempty"`
+}
+
+@server(
+	group: setting
+	middleware: AuthorizationMiddleware
+	prefix: /v2/setting
+)
+
+service financial_statement {
+
+	@doc "查看配置"
+	@handler settingInfo
+	get / () returns (GetSettingResp)
+	
+	@doc "修改配置信息"
+	@handler settingUpdate
+	post /update (UpdateSettingReq)
+}
